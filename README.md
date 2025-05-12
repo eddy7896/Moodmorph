@@ -48,5 +48,34 @@ start-all.bat
 ```
 it will install the dependencies and start both the frontend and backend in separate terminal windows.
 
+---
+
+## 🐳 Docker Setup
+
+You can containerize and run the entire project using Docker and Docker Compose.
+
+### Build and Run with Docker Compose
+
+1. **Build and start the containers:**
+   ```sh
+   docker-compose up --build
+   ```
+   This will build images for both the backend and frontend, install all dependencies, and start both services.
+
+2. **Access the app:**
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - Backend API: [http://localhost:5000](http://localhost:5000)
+
+3. **Stop the services:**
+   Press `Ctrl+C` in the terminal, then run:
+   ```sh
+   docker-compose down
+   ```
+
+### Requirements
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+---
 
 
