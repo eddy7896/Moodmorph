@@ -3,10 +3,33 @@ import cors from 'cors';
 import puppeteer from 'puppeteer';
 import getColors from 'get-image-colors';
 import fs from 'fs/promises';
+import multer from 'multer';
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Image upload and color palette extraction endpoint
+app.post('/upload-image', upload.single('image'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No image uploaded' });
+  }
+  try {
+    const colors = await getColors(req.file.buffer, req.file.mimetype);
+    const palette = colors.map(c => c.rgb());
+    // Safely format palette colors
+    const safePalette = palette.map(rgb => Array.isArray(rgb) ? `rgb(${rgb.join(',')})` : String(rgb));
+    const [primary, secondary, tertiary, ...rest] = safePalette;
+    return res.json({
+      palette: { primary, secondary, tertiary, others: rest }
+    });
+  } catch (err) {
+    console.error('Image analysis error:', err);
+    return res.status(500).json({ error: 'Failed to analyze image', details: err.message });
+  }
+});
 
 // Helper: Extract fonts from page
 async function extractFonts(page) {
