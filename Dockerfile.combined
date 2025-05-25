@@ -18,33 +18,37 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-WORKDIR /app/backend
+WORKDIR /app
 
 # Copy backend package files
-COPY backend/package*.json ./
+COPY package*.json ./
+COPY backend/package*.json ./backend/
+
+# Install root dependencies (if any)
+RUN npm install
 
 # Install backend dependencies
-RUN npm ci --only=production
+RUN cd backend && npm ci --only=production
 
 # Copy backend source code
-COPY backend/ .
+COPY backend/ ./backend/
 
 # ========== Frontend Build Stage ==========
 FROM node:18-alpine as frontend-build
 
-WORKDIR /app/frontend
+WORKDIR /app
 
 # Copy frontend package files
-COPY frontend/package*.json ./
+COPY frontend/package*.json ./frontend/
 
 # Install frontend dependencies
-RUN npm install
+RUN cd frontend && npm install
 
 # Copy frontend source code
-COPY frontend/ .
+COPY frontend/ ./frontend/
 
 # Build the frontend
-RUN npm run build
+RUN cd frontend && npm run build
 
 # ========== Production Stage ==========
 FROM nginx:alpine
