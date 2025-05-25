@@ -1,13 +1,22 @@
 # Frontend Dockerfile
 FROM node:18-alpine as build
 
-# Set working directory
-WORKDIR /app/frontend
+# Create and set working directory
+WORKDIR /app
 
 # Copy package files
+COPY package*.json ./
+
+# Install root dependencies (if any)
+RUN npm install
+
+# Set working directory for frontend
+WORKDIR /app/frontend
+
+# Copy frontend package files
 COPY frontend/package*.json ./
 
-# Install dependencies
+# Install frontend dependencies
 RUN npm install
 
 # Copy the rest of the frontend application
