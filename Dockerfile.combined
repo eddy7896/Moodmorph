@@ -18,49 +18,33 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-WORKDIR /app
-
-# Create backend directory
-RUN mkdir -p backend
-
-# Copy root package files
-COPY package*.json ./
-
-# Install root dependencies (if any)
-RUN npm install
-
-# Copy backend package files
+# Set working directory
 WORKDIR /app/backend
+
+# Copy package files first (for better caching)
 COPY backend/package*.json ./
 
 # Install backend dependencies
 RUN npm ci --only=production
 
-# Copy backend source code
-WORKDIR /app
-COPY backend/ ./backend/
+# Copy the rest of the backend files
+COPY backend/ .
 
 # ========== Frontend Build Stage ==========
 FROM node:18-alpine as frontend-build
 
-WORKDIR /app
-
-# Create frontend directory
-RUN mkdir -p frontend
-
-# Copy frontend package files
-COPY frontend/package*.json ./frontend/
-
-# Install frontend dependencies
 WORKDIR /app/frontend
+
+# Copy package files first (for better caching)
+COPY frontend/package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy frontend source code
-WORKDIR /app
-COPY frontend/ ./frontend/
+# Copy the rest of the frontend files
+COPY frontend/ .
 
 # Build the frontend
-WORKDIR /app/frontend
 RUN npm run build
 
 # ========== Production Stage ==========
@@ -75,14 +59,14 @@ WORKDIR /app/backend
 # Copy backend files from build stage
 COPY --from=backend-build /app/backend ./
 
+# Create directory for frontend build
+RUN mkdir -p /usr/share/nginx/html
+
 # Copy frontend build to nginx
 COPY --from=frontend-build /app/frontend/build /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose ports
-EXPOSE 80 5000
 
 # Create a script to start both services
 RUN echo '#!/bin/sh\n\
@@ -93,6 +77,9 @@ cd /app/backend && node server.js\n\
 # Keep the container running\n\
 tail -f /dev/null\n' > /start.sh && \
 chmod +x /start.sh
+
+# Expose ports
+EXPOSE 80 5000
 
 # Start the application
 CMD ["/start.sh"]
