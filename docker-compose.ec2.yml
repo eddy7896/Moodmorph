@@ -30,8 +30,8 @@ services:
 
   moodmorph-frontend:
     build:
-      context: ./frontend
-      dockerfile: ../Dockerfile.frontend
+      context: .
+      dockerfile: Dockerfile.frontend
     container_name: moodmorph-frontend
     restart: unless-stopped
     ports:
