@@ -78,4 +78,38 @@ You can containerize and run the entire project using Docker and Docker Compose.
 
 ---
 
+## 🌐 Deploy to VPS (Free Hosting)
+
+You can deploy MoodMorph to free VPS hosting platforms like Oracle Cloud, Google Cloud, or AWS.
+
+### Quick Deployment (One Command)
+
+On your VPS, run this single command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/eddy7896/web-analyser/main/quick-deploy.sh | bash
+```
+
+### Manual Deployment
+
+1. **Choose a free VPS provider:**
+   - **Oracle Cloud Always Free** (Recommended): 1-4 ARM cores, 6-24 GB RAM, 200 GB storage
+   - **Google Cloud Platform**: f1-micro instance + $300 credit
+   - **AWS EC2 Free Tier**: t2.micro for 12 months
+
+2. **Create and configure your VPS instance**
+
+3. **Connect to your VPS and deploy:**
+   ```bash
+   git clone https://github.com/eddy7896/web-analyser.git
+   cd web-analyser
+   chmod +x deploy.sh
+   ./deploy.sh
+   ```
+
+4. **Access your application at:** `http://YOUR_VPS_IP`
+
+📖 **For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)**
+
+---
 
