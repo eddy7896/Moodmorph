@@ -20,17 +20,24 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 
 WORKDIR /app
 
-# Copy backend package files
+# Create backend directory
+RUN mkdir -p backend
+
+# Copy root package files
 COPY package*.json ./
-COPY backend/package*.json ./backend/
 
 # Install root dependencies (if any)
 RUN npm install
 
+# Copy backend package files
+WORKDIR /app/backend
+COPY backend/package*.json ./
+
 # Install backend dependencies
-RUN cd backend && npm ci --only=production
+RUN npm ci --only=production
 
 # Copy backend source code
+WORKDIR /app
 COPY backend/ ./backend/
 
 # ========== Frontend Build Stage ==========
@@ -38,17 +45,23 @@ FROM node:18-alpine as frontend-build
 
 WORKDIR /app
 
+# Create frontend directory
+RUN mkdir -p frontend
+
 # Copy frontend package files
 COPY frontend/package*.json ./frontend/
 
 # Install frontend dependencies
-RUN cd frontend && npm install
+WORKDIR /app/frontend
+RUN npm install
 
 # Copy frontend source code
+WORKDIR /app
 COPY frontend/ ./frontend/
 
 # Build the frontend
-RUN cd frontend && npm run build
+WORKDIR /app/frontend
+RUN npm run build
 
 # ========== Production Stage ==========
 FROM nginx:alpine
