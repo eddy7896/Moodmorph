@@ -32,8 +32,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-      args:
-        - NODE_ENV=production
     container_name: moodmorph-frontend
     restart: unless-stopped
     ports:
