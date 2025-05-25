@@ -2,20 +2,19 @@
 FROM node:18-alpine as build
 
 # Set working directory
-WORKDIR /app
+WORKDIR /app/frontend
 
 # Copy package files
-COPY package*.json ./
-
+COPY frontend/package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application
-COPY . .
+# Copy the rest of the frontend application
+COPY frontend/ .
 
 # Build the app
-RUN cd frontend && npm run build
+RUN npm run build
 
 # Production stage
 FROM nginx:alpine
