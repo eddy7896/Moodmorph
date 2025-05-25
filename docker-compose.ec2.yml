@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  moodmorph-backend:
+  moodmorph:
     build:
       context: .
-      dockerfile: Dockerfile.backend
-    container_name: moodmorph-backend
+      dockerfile: Dockerfile.combined
+    container_name: moodmorph
     restart: unless-stopped
     environment:
       - NODE_ENV=production
@@ -20,9 +20,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 200M
+          memory: 400M
         reservations:
-          memory: 100M
+          memory: 200M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 30s
